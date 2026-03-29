@@ -1,62 +1,117 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nexa Login</title>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+
+  <style>
+    body {
+      background: #0b1220;
+      color: white;
+      font-family: Arial;
+      text-align: center;
+      padding-top: 80px;
+    }
+
+    input {
+      padding: 10px;
+      margin: 10px;
+      width: 220px;
+      border-radius: 6px;
+      border: none;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 6px;
+      background: #4f46e5;
+      color: white;
+      cursor: pointer;
+    }
+
+    #recaptcha-container {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+    }
+  </style>
 </head>
-<body style="background:#0f172a;color:white;text-align:center;font-family:sans-serif;">
+<body>
 
   <h2>Nexa Login</h2>
 
-  <input id="phone" placeholder="+233XXXXXXXXX"><br><br>
+  <!-- Phone Input -->
+  <input id="phone" type="text" placeholder="+233XXXXXXXXX"><br>
 
-  <div id="recaptcha-container"></div><br>
+  <!-- Send Code -->
+  <button onclick="sendCode()">Send Code</button>
 
-  <button onclick="sendOTP()">Send Code</button><br><br>
+  <!-- reCAPTCHA -->
+  <div id="recaptcha-container"></div>
 
-  <input id="code" placeholder="Enter OTP"><br><br>
-  <button onclick="verifyOTP()">Verify</button>
+  <!-- Code Input -->
+  <input id="code" type="text" placeholder="Enter OTP"><br>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  <!-- Verify -->
+  <button onclick="verifyCode()">Verify</button>
 
+  <script>
+    // 🔥 YOUR FIREBASE CONFIG (REPLACE THIS)
     const firebaseConfig = {
       apiKey: "AIzaSyA26P-LTPAmChtCrDg601qGcPYK5uJDqeA",
       authDomain: "mega-project-3cee2.firebaseapp.com",
       projectId: "mega-project-3cee2",
+      appId: "1:98906748629:web:504352bbff7ed4d019145c"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+    firebase.initializeApp(firebaseConfig);
 
-    window.recaptchaVerifier = new RecaptchaVerifier(
+    const auth = firebase.auth();
+
+    // 🔐 Setup reCAPTCHA
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
       'recaptcha-container',
-      { size: "normal" },
-      auth
+      {
+        size: 'normal'
+      }
     );
 
-    window.sendOTP = async function () {
-      const phone = document.getElementById("phone").value;
+    // 📩 Send OTP
+    function sendCode() {
+      const phoneNumber = document.getElementById("phone").value;
+      const appVerifier = window.recaptchaVerifier;
 
-      const result = await signInWithPhoneNumber(
-        auth,
-        phone,
-        window.recaptchaVerifier
-      );
+      auth.signInWithPhoneNumber(phoneNumber, appVerifier)
+        .then(function (confirmationResult) {
+          window.confirmationResult = confirmationResult;
+          alert("Code sent!");
+        })
+        .catch(function (error) {
+          console.error(error);
+          alert(error.message);
+        });
+    }
 
-      window.confirmationResult = result;
-      alert("Code sent!");
-    };
-
-    window.verifyOTP = async function () {
+    // ✅ Verify OTP
+    function verifyCode() {
       const code = document.getElementById("code").value;
 
-      const result = await window.confirmationResult.confirm(code);
-
-      alert("Login success!");
-      console.log(result.user);
-    };
+      confirmationResult.confirm(code)
+        .then(function (result) {
+          alert("Login successful 🚀");
+          console.log(result.user);
+        })
+        .catch(function (error) {
+          alert("Wrong code ❌");
+        });
+    }
   </script>
 
 </body>
-    </html>
+</html>
