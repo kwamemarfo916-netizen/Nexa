@@ -1,22 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nexa Login</title>
 
 <!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 
 <style>
 body {
-  margin: 0;
-  font-family: Arial, sans-serif;
   background-image: url('IMG-20260320-WA0072.jpg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
+  font-family: Arial;
 }
 
 /* Glass Card */
@@ -25,65 +23,51 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 340px;
+  width: 320px;
   padding: 30px;
-  border-radius: 25px;
+  border-radius: 20px;
   background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(18px);
+  backdrop-filter: blur(15px);
   border: 1px solid rgba(255,255,255,0.2);
-  box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
   text-align: center;
   color: white;
 }
 
-.glass h1 {
-  margin-bottom: 5px;
-}
-
-.glass p {
-  font-size: 14px;
-  opacity: 0.8;
-}
-
-/* Inputs */
 input {
   width: 90%;
-  margin-top: 12px;
+  margin-top: 10px;
   padding: 12px;
-  border-radius: 12px;
+  border-radius: 10px;
   border: none;
-  outline: none;
   background: rgba(255,255,255,0.2);
   color: white;
 }
 
-/* Buttons */
 button {
   width: 95%;
   margin-top: 12px;
   padding: 12px;
-  border-radius: 12px;
+  border-radius: 10px;
   border: none;
   background: rgba(255,255,255,0.2);
   color: white;
   cursor: pointer;
-  transition: 0.3s;
 }
 
 button:hover {
   background: rgba(255,255,255,0.4);
 }
 
-/* Divider */
-.divider {
-  margin: 15px 0;
-  font-size: 12px;
-  opacity: 0.6;
+.google {
+  background: white;
+  color: black;
+  font-weight: bold;
 }
 
-/* Google Button */
-.google {
-  background: rgba(255,255,255,0.15);
+.small {
+  font-size: 12px;
+  opacity: 0.7;
 }
 </style>
 </head>
@@ -91,34 +75,41 @@ button:hover {
 <body>
 
 <div class="glass">
-  <h1>NEXA</h1>
-  <p>Login to continue</p>
+  <h2>NEXA</h2>
+  <p class="small">Login to continue</p>
 
-  <!-- EMAIL LOGIN -->
-  <input type="email" id="email" placeholder="Email">
-  <input type="password" id="password" placeholder="Password">
+  <!-- EMAIL -->
+  <input id="email" type="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+
+  <!-- REMEMBER ME -->
+  <div style="text-align:left; margin-top:10px;">
+    <input type="checkbox" id="remember"> Remember me
+  </div>
+
   <button onclick="loginEmail()">Login with Email</button>
 
-  <div class="divider">OR</div>
+  <p class="small">OR</p>
 
-  <!-- PHONE LOGIN -->
-  <input type="tel" id="phone" placeholder="+233XXXXXXXXX">
+  <!-- PHONE -->
+  <input id="phone" type="tel" placeholder="+233XXXXXXXXX">
   <div id="recaptcha-container"></div>
-  <button onclick="sendOTP()">Send Code</button>
 
-  <input type="text" id="otp" placeholder="Enter Code">
-  <button onclick="verifyOTP()">Verify Code</button>
+  <button onclick="sendCode()">Send Code</button>
 
-  <div class="divider">OR</div>
+  <input id="code" placeholder="Enter Code">
+  <button onclick="verifyCode()">Verify Code</button>
 
-  <!-- GOOGLE LOGIN -->
+  <p class="small">OR</p>
+
+  <!-- GOOGLE -->
   <button class="google" onclick="googleLogin()">Continue with Google</button>
 
-  <p style="font-size:12px;">Don't have an account? Sign up</p>
+  <p class="small">Don't have an account? Sign up</p>
 </div>
 
 <script>
-// 🔥 YOUR FIREBASE CONFIG HERE
+// 🔥 PUT YOUR FIREBASE CONFIG HERE
 const firebaseConfig = {
   apiKey: "AIzaSyA26P-LTPAmChtCrDg601qGcPYK5uJDqeA",
   authDomain: "mega-project-3cee2.firebaseapp.com",
@@ -128,14 +119,30 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
+// ✅ AUTO LOGIN (REMEMBER USER)
+auth.onAuthStateChanged(user => {
+  if (user) {
+    window.location.href = "home.html";
+  }
+});
+
 // ✅ EMAIL LOGIN
 function loginEmail() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  const email = email.value;
+  const password = password.value;
+  const remember = document.getElementById("remember").checked;
 
-  auth.signInWithEmailAndPassword(email, password)
-    .then(() => alert("Login successful"))
-    .catch(err => alert(err.message));
+  const persistence = remember
+    ? firebase.auth.Auth.Persistence.LOCAL
+    : firebase.auth.Auth.Persistence.SESSION;
+
+  auth.setPersistence(persistence).then(() => {
+    return auth.signInWithEmailAndPassword(email, password);
+  })
+  .then(() => {
+    window.location.href = "home.html";
+  })
+  .catch(err => alert(err.message));
 }
 
 // ✅ GOOGLE LOGIN
@@ -143,34 +150,37 @@ function googleLogin() {
   const provider = new firebase.auth.GoogleAuthProvider();
 
   auth.signInWithPopup(provider)
-    .then(() => alert("Google login successful"))
+    .then(() => window.location.href = "home.html")
     .catch(err => alert(err.message));
 }
 
 // ✅ RECAPTCHA
 window.onload = function () {
-  window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container');
+  window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+    'recaptcha-container',
+    { size: 'normal' }
+  );
 };
 
 // ✅ SEND OTP
-function sendOTP() {
+function sendCode() {
   const phone = document.getElementById("phone").value;
 
   auth.signInWithPhoneNumber(phone, window.recaptchaVerifier)
-    .then(confirmationResult => {
-      window.confirmationResult = confirmationResult;
+    .then(res => {
+      window.confirmationResult = res;
       alert("Code sent!");
     })
     .catch(err => alert(err.message));
 }
 
 // ✅ VERIFY OTP
-function verifyOTP() {
-  const code = document.getElementById("otp").value;
+function verifyCode() {
+  const code = document.getElementById("code").value;
 
   confirmationResult.confirm(code)
-    .then(() => alert("Phone login success"))
-    .catch(err => alert(err.message));
+    .then(() => window.location.href = "home.html")
+    .catch(err => alert("Invalid code"));
 }
 </script>
 
