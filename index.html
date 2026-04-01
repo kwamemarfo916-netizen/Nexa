@@ -12,33 +12,32 @@
 body {
   margin: 0;
   font-family: Arial;
-  background-image: url('IMG-20260320-WA0072.jpg');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
 }
 
+/* GLASS CARD */
 .glass {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 330px;
+  width: 340px;
   padding: 30px;
   border-radius: 20px;
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(18px);
-  border: 1px solid rgba(255,255,255,0.15);
-  box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-  text-align: center;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
   color: white;
+  text-align: center;
 }
 
-.glass h2 {
+h2 {
   margin-bottom: 5px;
   letter-spacing: 2px;
 }
 
+/* INPUTS */
 .input-box {
   margin-top: 15px;
 }
@@ -46,24 +45,25 @@ body {
 .input-box input {
   width: 100%;
   padding: 14px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.2);
-  background: rgba(255,255,255,0.15);
+  border-radius: 10px;
+  border: none;
+  background: rgba(255,255,255,0.08);
   color: white;
   outline: none;
   transition: 0.3s;
 }
 
 .input-box input:focus {
-  border: 1px solid #8b5cf6;
-  box-shadow: 0 0 12px rgba(139,92,246,0.6);
+  background: rgba(255,255,255,0.12);
+  box-shadow: 0 0 10px rgba(139,92,246,0.6);
 }
 
+/* BUTTONS */
 button {
   width: 100%;
   margin-top: 15px;
   padding: 14px;
-  border-radius: 12px;
+  border-radius: 10px;
   border: none;
   background: linear-gradient(135deg, #6366f1, #8b5cf6);
   color: white;
@@ -83,21 +83,14 @@ button:hover {
 .divider {
   margin-top: 15px;
   font-size: 12px;
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
-.remember {
+/* CHECKBOX AREAS */
+.remember, .agree, .captcha-box {
   text-align: left;
   font-size: 13px;
   margin-top: 10px;
-}
-
-/* AGREEMENT */
-.agree {
-  text-align: left;
-  font-size: 12px;
-  margin-top: 10px;
-  color: rgba(255,255,255,0.8);
 }
 
 .agree a {
@@ -109,11 +102,13 @@ button:hover {
   text-decoration: underline;
 }
 
-/* SIMPLE CAPTCHA */
-.captcha-box {
-  margin-top: 10px;
-  text-align: left;
-  font-size: 13px;
+/* CAPTCHA INPUT */
+.captcha-box input {
+  width: 100%;
+  margin-top: 5px;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
 }
 </style>
 </head>
@@ -122,7 +117,7 @@ button:hover {
 
 <div class="glass">
   <h2>NEXA</h2>
-  <p style="font-size:12px; opacity:0.7;">Login to continue</p>
+  <p style="font-size:12px; opacity:0.6;">Login or create account</p>
 
   <div class="input-box">
     <input id="email" type="email" placeholder="Email">
@@ -136,24 +131,22 @@ button:hover {
     <input type="checkbox" id="remember"> Remember me
   </div>
 
-  <!-- AGREEMENT -->
   <div class="agree">
     <input type="checkbox" id="agree">
-    I agree to the 
-    <a href="rules.html" target="_blank">Nexa Rules</a>, 
+    I agree to 
+    <a href="rules.html" target="_blank">Rules</a>, 
     <a href="terms.html" target="_blank">Terms</a> and 
     <a href="privacy.html" target="_blank">Privacy Policy</a>
   </div>
 
-  <!-- SIMPLE CAPTCHA -->
   <div class="captcha-box">
     Solve: <span id="captchaText"></span>
-    <input id="captchaInput" placeholder="Answer" style="margin-top:5px; width:100%; padding:10px; border-radius:10px; border:none;">
+    <input id="captchaInput" placeholder="Answer">
   </div>
 
   <button onclick="login()">Login</button>
 
-  <button onclick="signup()" style="background: rgba(255,255,255,0.2);">
+  <button onclick="signup()" style="background: rgba(255,255,255,0.15);">
     Create Account
   </button>
 
@@ -173,34 +166,26 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
-// 🔥 CAPTCHA GENERATOR
+// 🔢 CAPTCHA
 let num1, num2;
 
 function generateCaptcha() {
   num1 = Math.floor(Math.random() * 10);
   num2 = Math.floor(Math.random() * 10);
-  document.getElementById("captchaText").innerText = num1 + " + " + num2;
+  document.getElementById("captchaText").innerText = `${num1} + ${num2}`;
 }
-
 generateCaptcha();
 
-// 🔥 AUTO LOGIN
-auth.onAuthStateChanged(user => {
-  if (user) {
-    window.location.href = "home.html";
-  }
-});
-
-// ✅ VALIDATION
+// ✅ CHECK ALL
 function checkAll() {
   if (!document.getElementById("agree").checked) {
-    alert("Please agree to Nexa policies");
+    alert("Agree to policies first");
     return false;
   }
 
   const answer = document.getElementById("captchaInput").value;
   if (parseInt(answer) !== num1 + num2) {
-    alert("Captcha incorrect");
+    alert("Wrong captcha");
     generateCaptcha();
     return false;
   }
@@ -208,34 +193,51 @@ function checkAll() {
   return true;
 }
 
+// 🔁 AUTH STATE
+auth.onAuthStateChanged(user => {
+  if (user) {
+    if (user.emailVerified) {
+      window.location.href = "home.html";
+    } else {
+      window.location.href = "verify.html";
+    }
+  }
+});
+
 // 🔐 LOGIN
 function login() {
   if (!checkAll()) return;
 
-  const email = email.value;
-  const password = password.value;
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
   const remember = document.getElementById("remember").checked;
 
   const persistence = remember
     ? firebase.auth.Auth.Persistence.LOCAL
     : firebase.auth.Auth.Persistence.SESSION;
 
-  auth.setPersistence(persistence).then(() => {
-    return auth.signInWithEmailAndPassword(email, password);
-  })
-  .then(() => window.location.href = "home.html")
-  .catch(err => alert(err.message));
+  auth.setPersistence(persistence)
+    .then(() => auth.signInWithEmailAndPassword(email, password))
+    .catch(err => alert(err.message));
 }
 
 // 🆕 SIGNUP
 function signup() {
   if (!checkAll()) return;
 
-  const email = email.value;
-  const password = password.value;
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
   auth.createUserWithEmailAndPassword(email, password)
-    .then(() => alert("Account created! Now login"))
+    .then((userCredential) => {
+
+      // 📧 SEND EMAIL VERIFICATION
+      userCredential.user.sendEmailVerification();
+
+      alert("Verification email sent. Check your inbox.");
+
+      window.location.href = "verify.html";
+    })
     .catch(err => alert(err.message));
 }
 
@@ -246,10 +248,16 @@ function googleLogin() {
   const provider = new firebase.auth.GoogleAuthProvider();
 
   auth.signInWithPopup(provider)
-    .then(() => window.location.href = "home.html")
+    .then((result) => {
+      if (!result.user.emailVerified) {
+        window.location.href = "verify.html";
+      } else {
+        window.location.href = "home.html";
+      }
+    })
     .catch(err => alert(err.message));
 }
 </script>
 
 </body>
-</html>
+      </html>
