@@ -88,51 +88,57 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
+let checkInterval;
+
 // 🔥 CHECK USER
 auth.onAuthStateChanged(user => {
   if (!user) {
     window.location.href = "index.html";
   } else {
-    updateStatus(user);
+    startAutoCheck(user);
   }
 });
 
-// 📧 SEND EMAIL VERIFICATION
+// 🔄 AUTO CHECK VERIFICATION
+function startAutoCheck(user) {
+  updateStatus(user);
+
+  checkInterval = setInterval(async () => {
+    await user.reload();
+
+    if (user.emailVerified) {
+      clearInterval(checkInterval);
+
+      document.getElementById("status").innerText = "✅ Email Verified";
+
+      // 🔥 SMALL DELAY FOR UX
+      setTimeout(() => {
+        window.location.href = "home.html";
+      }, 1500); // 1.5 seconds
+
+    } else {
+      updateStatus(user);
+    }
+  }, 3000);
+}
+
+// 📊 STATUS TEXT
+function updateStatus(user) {
+  document.getElementById("status").innerText =
+    user.emailVerified
+      ? "✅ Email Verified"
+      : "❌ Email Not Verified (Check your email)";
+}
+
+// 📧 RESEND EMAIL
 function sendVerification() {
   const user = auth.currentUser;
 
   user.sendEmailVerification()
-    .then(() => alert("Verification email sent! Check your inbox."))
+    .then(() => alert("Verification email sent!"))
     .catch(err => alert(err.message));
 }
-
-// 🔄 UPDATE STATUS
-function updateStatus(user) {
-  if (user.emailVerified) {
-    document.getElementById("status").innerText = "✅ Email Verified";
-  } else {
-    document.getElementById("status").innerText = "❌ Email Not Verified";
-  }
-}
-
-// 🚀 CONTINUE
-function continueApp() {
-  const user = auth.currentUser;
-
-  if (!user.emailVerified) {
-    alert("Please verify your email first.");
-    return;
-  }
-
-  const captcha = grecaptcha.getResponse();
-  if (!captcha) {
-    alert("Please complete the CAPTCHA");
-    return;
-  }
-
-  window.location.href = "home.html";
-}
-</script>
+                              </script>
 
 </body>
   </html>
