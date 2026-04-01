@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexa Verification</title>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+
+<!-- Google reCAPTCHA -->
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: url('IMG-20260320-WA0072.jpg') no-repeat center/cover fixed;
+}
+
+/* Glass Card */
+.glass {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 340px;
+  padding: 30px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+  text-align: center;
+  color: white;
+}
+
+button {
+  width: 100%;
+  margin-top: 15px;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  transform: scale(1.03);
+}
+
+.info {
+  font-size: 13px;
+  opacity: 0.8;
+}
+</style>
+</head>
+
+<body>
+
+<div class="glass">
+  <h2>Verify Your Account</h2>
+  <p class="info">Complete verification to continue</p>
+
+  <!-- EMAIL STATUS -->
+  <p id="status" class="info">Checking verification...</p>
+
+  <!-- SEND EMAIL -->
+  <button onclick="sendVerification()">Send Verification Email</button>
+
+  <!-- RECAPTCHA -->
+  <div class="g-recaptcha" data-sitekey="YOUR_SITE_KEY" style="margin-top:15px;"></div>
+
+  <!-- CONTINUE -->
+  <button onclick="continueApp()">Continue</button>
+</div>
+
+<script>
+// 🔥 FIREBASE CONFIG
+const firebaseConfig = {
+  apiKey: "AIzaSyA26P-LTPAmChtCrDg601qGcPYK5uJDqeA",
+  authDomain: "mega-project-3cee2.firebaseapp.com",
+  projectId: "mega-project-3cee2",
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+// 🔥 CHECK USER
+auth.onAuthStateChanged(user => {
+  if (!user) {
+    window.location.href = "index.html";
+  } else {
+    updateStatus(user);
+  }
+});
+
+// 📧 SEND EMAIL VERIFICATION
+function sendVerification() {
+  const user = auth.currentUser;
+
+  user.sendEmailVerification()
+    .then(() => alert("Verification email sent! Check your inbox."))
+    .catch(err => alert(err.message));
+}
+
+// 🔄 UPDATE STATUS
+function updateStatus(user) {
+  if (user.emailVerified) {
+    document.getElementById("status").innerText = "✅ Email Verified";
+  } else {
+    document.getElementById("status").innerText = "❌ Email Not Verified";
+  }
+}
+
+// 🚀 CONTINUE
+function continueApp() {
+  const user = auth.currentUser;
+
+  if (!user.emailVerified) {
+    alert("Please verify your email first.");
+    return;
+  }
+
+  const captcha = grecaptcha.getResponse();
+  if (!captcha) {
+    alert("Please complete the CAPTCHA");
+    return;
+  }
+
+  window.location.href = "home.html";
+}
+</script>
+
+</body>
+  </html>
