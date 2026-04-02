@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexa Home</title>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  color: white;
+  background: #0f0f1a;
+}
+
+/* GLASS CARD */
+.card {
+  margin: 20px;
+  padding: 20px;
+  border-radius: 20px;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(15px);
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+button {
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: none;
+  background: #8b5cf6;
+  color: white;
+  cursor: pointer;
+}
+
+/* CENTER TEXT */
+.center {
+  text-align: center;
+  margin-top: 100px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="card header">
+  <h3 id="username">Loading...</h3>
+  <button onclick="logout()">Logout</button>
+</div>
+
+<div class="center">
+  <h1>Welcome to Nexa 🔥</h1>
+  <p>Your social world starts here</p>
+
+  <button onclick="goProfile()">Go to Profile</button>
+</div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyA26P-LTPAmChtCrDg601qGcPYK5uJDqeA",
+  authDomain: "mega-project-3cee2.firebaseapp.com",
+  projectId: "mega-project-3cee2",
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// 🔐 CHECK USER
+auth.onAuthStateChanged(user => {
+  if (!user) {
+    window.location.href = "index.html";
+  } else {
+    loadUser(user.uid);
+  }
+});
+
+// 📥 LOAD USER DATA
+function loadUser(uid) {
+  db.collection("users").doc(uid).get().then(doc => {
+    if (doc.exists) {
+      const data = doc.data();
+
+      document.getElementById("username").innerText = data.username || "User";
+
+      // 🔥 APPLY BACKDROP AS BACKGROUND
+      if (data.backdrop) {
+        document.body.style.backgroundImage = `url(${data.backdrop})`;
+        document.body.style.backgroundSize = "cover";
+        document.body.style.backgroundPosition = "center";
+      }
+    }
+  });
+}
+
+// 🚪 LOGOUT
+function logout() {
+  auth.signOut().then(() => {
+    window.location.href = "index.html";
+  });
+}
+
+// 👤 GO TO PROFILE
+function goProfile() {
+  window.location.href = "profile.html";
+}
+</script>
+
+</body>
+</html>
