@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexa Profile</title>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #0f0f1a;
+  color: white;
+}
+
+/* TOP BAR */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 15px;
+}
+
+.menu, .settings {
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* BACKDROP */
+.backdrop {
+  height: 180px;
+  background: #222;
+  background-size: cover;
+  background-position: center;
+}
+
+/* PROFILE SECTION */
+.profile {
+  padding: 15px;
+}
+
+.avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 4px solid #0f0f1a;
+  margin-top: -60px;
+}
+
+/* NAME */
+.name {
+  font-size: 18px;
+  margin-top: 10px;
+}
+
+.verified {
+  color: #3b82f6;
+  font-size: 14px;
+}
+
+/* USERNAME */
+.username {
+  opacity: 0.7;
+  font-size: 14px;
+}
+
+/* INFO */
+.info {
+  margin-top: 10px;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+/* INPUT CARD */
+.card {
+  margin: 15px;
+  padding: 15px;
+  border-radius: 15px;
+  background: rgba(255,255,255,0.05);
+}
+
+input {
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+}
+
+/* TABS */
+.tabs {
+  display: flex;
+  overflow-x: auto;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.tab {
+  padding: 10px;
+  font-size: 13px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+  <div class="menu">☰</div>
+  <div class="settings">⚙️</div>
+</div>
+
+<div id="backdrop" class="backdrop"></div>
+
+<div class="profile">
+  <img id="avatarPreview" class="avatar" src="https://via.placeholder.com/100">
+
+  <div class="name">
+    <span id="fullName">Full Name</span>
+    <span id="verified" class="verified">✔</span>
+  </div>
+
+  <div id="usernameDisplay" class="username">@username</div>
+
+  <div id="bioDisplay" class="info">Bio...</div>
+  <div id="emailDisplay" class="info"></div>
+  <div id="phoneDisplay" class="info"></div>
+  <div id="dobDisplay" class="info"></div>
+</div>
+
+<div class="card">
+  <input id="fullNameInput" placeholder="Full Name">
+  <input id="username" placeholder="Username">
+  <input id="bio" placeholder="Bio">
+  <input id="email" placeholder="Email">
+  <input id="phone" placeholder="Phone Number">
+  <input id="dob" placeholder="Date of Birth">
+
+  <input id="avatar" placeholder="Avatar Image URL">
+  <input id="backdropInput" placeholder="Backdrop Image URL">
+
+  <button onclick="saveProfile()">Save</button>
+</div>
+
+<div class="tabs">
+  <div class="tab">Posts</div>
+  <div class="tab">Media</div>
+  <div class="tab">Articles</div>
+  <div class="tab">Replies</div>
+  <div class="tab">Bookmarks</div>
+</div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyA26P-LTPAmChtCrDg601qGcPYK5uJDqeA",
+  authDomain: "mega-project-3cee2.firebaseapp.com",
+  projectId: "mega-project-3cee2",
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+auth.onAuthStateChanged(user => {
+  if (!user) {
+    window.location.href = "index.html";
+  } else {
+    loadProfile(user.uid);
+  }
+});
+
+function saveProfile() {
+  const user = auth.currentUser;
+
+  const data = {
+    fullName: fullNameInput.value,
+    username: username.value,
+    bio: bio.value,
+    email: email.value,
+    phone: phone.value,
+    dob: dob.value,
+    avatar: avatar.value,
+    backdrop: backdropInput.value,
+    verified: false
+  };
+
+  db.collection("users").doc(user.uid).set(data, { merge: true })
+  .then(() => alert("Saved 🔥"));
+}
+
+function loadProfile(uid) {
+  db.collection("users").doc(uid).get().then(doc => {
+    if (doc.exists) {
+      const d = doc.data();
+
+      fullName.innerText = d.fullName || "Full Name";
+      usernameDisplay.innerText = "@" + (d.username || "username");
+      bioDisplay.innerText = d.bio || "";
+
+      emailDisplay.innerText = d.email || "";
+      phoneDisplay.innerText = d.phone || "";
+      dobDisplay.innerText = d.dob || "";
+
+      avatarPreview.src = d.avatar || "https://via.placeholder.com/100";
+
+      backdrop.style.backgroundImage = `url(${d.backdrop})`;
+
+      if (!d.verified) document.getElementById("verified").style.display = "none";
+    }
+  });
+}
+</script>
+
+</body>
+  </html>
