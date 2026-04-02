@@ -11,145 +11,164 @@
 <style>
 body {
   margin: 0;
-  font-family: Arial;
-  background: #0f0f1a;
+  font-family: 'Segoe UI', sans-serif;
+  background: #050510;
   color: white;
-}
-
-/* TOP BAR */
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 15px;
-}
-
-.menu, .settings {
-  font-size: 20px;
-  cursor: pointer;
 }
 
 /* BACKDROP */
 .backdrop {
-  height: 180px;
-  background: #222;
+  height: 240px;
+  position: relative;
+  background: linear-gradient(135deg,#6366f1,#8b5cf6);
   background-size: cover;
-  background-position: center;
 }
 
-/* PROFILE SECTION */
-.profile {
-  padding: 15px;
+.backdrop::after {
+  content:"";
+  position:absolute;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.5);
+  backdrop-filter: blur(10px);
 }
 
-.avatar {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  border: 4px solid #0f0f1a;
-  margin-top: -60px;
+/* TOP BAR */
+.topbar {
+  position:absolute;
+  width:100%;
+  padding:15px;
+  display:flex;
+  justify-content:space-between;
+  z-index:2;
+  font-size:20px;
 }
 
-/* NAME */
-.name {
-  font-size: 18px;
-  margin-top: 10px;
+/* SEARCH */
+.search-box {
+  padding: 12px;
 }
 
-.verified {
-  color: #3b82f6;
-  font-size: 14px;
-}
-
-/* USERNAME */
-.username {
-  opacity: 0.7;
-  font-size: 14px;
-}
-
-/* INFO */
-.info {
-  margin-top: 10px;
-  font-size: 13px;
-  opacity: 0.8;
-}
-
-/* INPUT CARD */
-.card {
-  margin: 15px;
-  padding: 15px;
-  border-radius: 15px;
-  background: rgba(255,255,255,0.05);
-}
-
-input {
+.search-box input {
   width: 100%;
-  margin-top: 8px;
-  padding: 10px;
-  border-radius: 10px;
+  padding: 12px;
+  border-radius: 15px;
   border: none;
+  background: rgba(255,255,255,0.06);
+  color: white;
+  backdrop-filter: blur(15px);
 }
 
-/* TABS */
-.tabs {
-  display: flex;
-  overflow-x: auto;
-  border-top: 1px solid rgba(255,255,255,0.1);
+/* RESULTS */
+.user {
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.05);
+  margin-top: 6px;
 }
 
-.tab {
-  padding: 10px;
-  font-size: 13px;
-  white-space: nowrap;
-  cursor: pointer;
+/* CARD */
+.card {
+  margin: -90px 12px 12px;
+  padding: 20px;
+  border-radius: 30px;
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(30px);
+  box-shadow: 0 0 40px rgba(139,92,246,0.3);
+}
+
+/* AVATAR */
+.avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 4px solid #050510;
+  box-shadow: 0 0 30px #8b5cf6;
+}
+
+/* TEXT */
+.name { font-size: 22px; font-weight: bold; }
+.username { opacity: .6; }
+.bio { margin-top: 10px; }
+
+/* STATS */
+.stats {
+  display:flex;
+  justify-content: space-around;
+  margin-top:15px;
+  text-align:center;
+}
+
+/* BUTTON */
+button {
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:15px;
+  margin-top:12px;
+  background: linear-gradient(135deg,#6366f1,#8b5cf6);
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+/* FLOAT EDIT PANEL */
+.edit-panel {
+  display:none;
+  margin-top:15px;
+}
+
+.edit-panel input {
+  width:100%;
+  padding:10px;
+  margin-top:8px;
+  border-radius:10px;
+  border:none;
+  background: rgba(255,255,255,0.07);
+  color:white;
 }
 </style>
 </head>
 
 <body>
 
-<div class="topbar">
-  <div class="menu">☰</div>
-  <div class="settings">⚙️</div>
-</div>
-
-<div id="backdrop" class="backdrop"></div>
-
-<div class="profile">
-  <img id="avatarPreview" class="avatar" src="https://via.placeholder.com/100">
-
-  <div class="name">
-    <span id="fullName">Full Name</span>
-    <span id="verified" class="verified">✔</span>
+<div class="backdrop" id="backdrop">
+  <div class="topbar">
+    <div>☰</div>
+    <div id="adminBtn" style="display:none;">⚙️</div>
   </div>
-
-  <div id="usernameDisplay" class="username">@username</div>
-
-  <div id="bioDisplay" class="info">Bio...</div>
-  <div id="emailDisplay" class="info"></div>
-  <div id="phoneDisplay" class="info"></div>
-  <div id="dobDisplay" class="info"></div>
 </div>
+
+<div class="search-box">
+  <input id="searchInput" placeholder="🔍 Search users...">
+</div>
+
+<div id="results"></div>
 
 <div class="card">
-  <input id="fullNameInput" placeholder="Full Name">
-  <input id="username" placeholder="Username">
-  <input id="bio" placeholder="Bio">
-  <input id="email" placeholder="Email">
-  <input id="phone" placeholder="Phone Number">
-  <input id="dob" placeholder="Date of Birth">
+  <img id="avatarPreview" class="avatar">
 
-  <input id="avatar" placeholder="Avatar Image URL">
-  <input id="backdropInput" placeholder="Backdrop Image URL">
+  <div class="name" id="fullName"></div>
+  <div class="username" id="usernameDisplay"></div>
+  <div class="bio" id="bioDisplay"></div>
 
-  <button onclick="saveProfile()">Save</button>
-</div>
+  <div class="stats">
+    <div><b id="followersCount">0</b><br><small>Followers</small></div>
+    <div id="followingBox"><b id="followingCount">0</b><br><small>Following</small></div>
+  </div>
 
-<div class="tabs">
-  <div class="tab">Posts</div>
-  <div class="tab">Media</div>
-  <div class="tab">Articles</div>
-  <div class="tab">Replies</div>
-  <div class="tab">Bookmarks</div>
+  <button id="actionBtn"></button>
+
+  <!-- EDIT INLINE -->
+  <div id="editPanel" class="edit-panel">
+    <input id="editFullName" placeholder="Full Name">
+    <input id="editUsername" placeholder="Username">
+    <input id="editBio" placeholder="Bio">
+    <input id="editAvatar" placeholder="Avatar URL">
+    <input id="editBackdrop" placeholder="Backdrop URL">
+
+    <button onclick="saveEdit()">Save Changes</button>
+  </div>
 </div>
 
 <script>
@@ -160,59 +179,128 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+let currentUser, profileId;
+
+const params = new URLSearchParams(window.location.search);
+profileId = params.get("uid");
+
 auth.onAuthStateChanged(user => {
-  if (!user) {
-    window.location.href = "index.html";
-  } else {
-    loadProfile(user.uid);
+  if (!user) location.href = "index.html";
+
+  currentUser = user.uid;
+
+  // ADMIN BUTTON
+  if (user.email === "kwamemarfo916@gmail.com") {
+    adminBtn.style.display = "block";
+    adminBtn.onclick = () => location.href = "admin.html";
   }
+
+  if (!profileId) profileId = user.uid;
+
+  loadProfile();
 });
 
-function saveProfile() {
-  const user = auth.currentUser;
+function loadProfile() {
+  db.collection("users").doc(profileId).get().then(doc => {
+    const d = doc.data();
 
-  const data = {
-    fullName: fullNameInput.value,
-    username: username.value,
-    bio: bio.value,
-    email: email.value,
-    phone: phone.value,
-    dob: dob.value,
-    avatar: avatar.value,
-    backdrop: backdropInput.value,
-    verified: false
-  };
+    fullName.innerText = d.fullName || "User";
+    usernameDisplay.innerText = "@" + (d.username || "user");
+    bioDisplay.innerText = d.bio || "";
 
-  db.collection("users").doc(user.uid).set(data, { merge: true })
-  .then(() => alert("Saved 🔥"));
+    avatarPreview.src = d.avatar || "";
+    backdrop.style.backgroundImage = `url(${d.backdrop})`;
+
+    setupUI();
+    loadFollow();
+  });
 }
 
-function loadProfile(uid) {
-  db.collection("users").doc(uid).get().then(doc => {
+function setupUI() {
+  if (currentUser === profileId) {
+    actionBtn.innerText = "Edit Profile ✏️";
+    actionBtn.onclick = () => {
+      editPanel.style.display =
+        editPanel.style.display === "block" ? "none" : "block";
+    };
+  } else {
+    followingBox.style.display = "none";
+    actionBtn.onclick = toggleFollow;
+  }
+}
+
+function toggleFollow() {
+  const id = currentUser + "_" + profileId;
+  const ref = db.collection("follows").doc(id);
+
+  ref.get().then(doc => {
     if (doc.exists) {
-      const d = doc.data();
-
-      fullName.innerText = d.fullName || "Full Name";
-      usernameDisplay.innerText = "@" + (d.username || "username");
-      bioDisplay.innerText = d.bio || "";
-
-      emailDisplay.innerText = d.email || "";
-      phoneDisplay.innerText = d.phone || "";
-      dobDisplay.innerText = d.dob || "";
-
-      avatarPreview.src = d.avatar || "https://via.placeholder.com/100";
-
-      backdrop.style.backgroundImage = `url(${d.backdrop})`;
-
-      if (!d.verified) document.getElementById("verified").style.display = "none";
+      ref.delete().then(loadFollow);
+    } else {
+      ref.set({ from: currentUser, to: profileId }).then(loadFollow);
     }
   });
 }
+
+function loadFollow() {
+  db.collection("follows").where("to","==",profileId).get()
+    .then(s => followersCount.innerText = s.size);
+
+  if (currentUser === profileId) {
+    db.collection("follows").where("from","==",profileId).get()
+      .then(s => followingCount.innerText = s.size);
+  }
+
+  if (currentUser !== profileId) {
+    const ref = db.collection("follows").doc(currentUser+"_"+profileId);
+    ref.get().then(doc=>{
+      actionBtn.innerText = doc.exists ? "Unfollow ❌" : "Follow 🔥";
+    });
+  }
+}
+
+function saveEdit() {
+  db.collection("users").doc(currentUser).update({
+    fullName: editFullName.value,
+    username: editUsername.value,
+    bio: editBio.value,
+    avatar: editAvatar.value,
+    backdrop: editBackdrop.value
+  }).then(()=>{
+    loadProfile();
+    editPanel.style.display = "none";
+  });
+}
+
+// SEARCH
+searchInput.addEventListener("input", function() {
+  const value = this.value.toLowerCase();
+  results.innerHTML = "";
+
+  if (!value) return;
+
+  db.collection("users").get().then(snapshot => {
+    snapshot.forEach(doc => {
+      const user = doc.data();
+
+      if (user.username && user.username.toLowerCase().includes(value)) {
+        const div = document.createElement("div");
+        div.className = "user";
+        div.innerText = user.username;
+
+        div.onclick = () => {
+          window.location.href = "profile.html?uid=" + doc.id;
+        };
+
+        results.appendChild(div);
+      }
+    });
+  });
+});
 </script>
 
 </body>
-  </html>
+                                       </html>
