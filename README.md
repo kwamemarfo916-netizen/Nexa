@@ -1,2 +1,3 @@
-# Nexa
+# SnapShortz
+
 social giant 
