@@ -3,174 +3,1191 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEXA Profile PRO - X Edition</title>
-<link href="https://cloudflare.com" rel="stylesheet">
+<title>NEXA Profile PRO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-  :root { --x-blue: #1d9bf0; --x-purple: #9d4edd; }
-  body { margin:0; font-family:'Segoe UI', sans-serif; background:#000; color:white; overflow-x: hidden; }
+  :root {
+    --accent: #1d9bf0;
+    --accent-2: #9d4edd;
+    --bg: #000;
+    --surface: #0d0d0d;
+    --surface-2: #111;
+    --border: #1f1f1f;
+    --text: #e7e9ea;
+    --muted: #536471;
+    --like: #f91880;
+    --repost: #00ba7c;
+  }
 
-  /* COVER & AVATAR EDITABLE */
-  .cover { height:200px; background: url('https://imgur.com') center/cover; position: relative; cursor: pointer; }
-  .cover:hover::after { content: "Change Backdrop"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.5); padding: 10px; border-radius: 5px; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  .profile { padding: 0 15px; position: relative; margin-bottom: 20px; }
-  .avatar-container { position: relative; width: 85px; margin-top: -45px; }
-  .avatar { width: 80px; height: 80px; border-radius: 50%; border: 4px solid #000; cursor: pointer; transition: 0.3s; }
-  .avatar:hover { filter: brightness(0.7); }
+  html { scroll-behavior: smooth; }
 
-  /* UI ELEMENTS */
-  .top-row { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
-  .btn-sub { background: #9d4edd; border: none; color: white; padding: 8px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; }
-  .btn-icon { background: none; border: 1px solid #555; color: white; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+    max-width: 600px;
+    margin: 0 auto;
+    border-right: 1px solid var(--border);
+    border-left: 1px solid var(--border);
+    position: relative;
+  }
 
-  .user-info h2 { margin: 5px 0 0; font-size: 20px; display: flex; align-items: center; gap: 5px; }
-  .user-info p { color: #71767b; margin: 0; font-size: 15px; }
-  .verified { color: #1d9bf0; font-size: 16px; }
-  .company-link { color: #1d9bf0; text-decoration: none; font-size: 14px; margin-right: 10px; }
+  /* ── HEADER ─────────────────────────────── */
+  .top-bar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background: rgba(0,0,0,0.75);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
 
-  .stats { display: flex; gap: 15px; margin-top: 12px; font-size: 14px; border-bottom: 1px solid #333; padding-bottom: 15px; }
-  .stats b { color: white; }
-  .stats span { color: #71767b; }
+  .back-btn {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+    font-size: 16px;
+  }
+  .back-btn:hover { background: rgba(255,255,255,0.07); }
 
-  /* FLOATING PLUS BUTTON */
-  .plus-container { position: fixed; bottom: 80px; right: 20px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 100; }
-  .plus-options { display: none; flex-direction: column; gap: 10px; margin-bottom: 10px; }
-  .opt-btn { width: 45px; height: 45px; border-radius: 50%; background: #111; border: 1px solid #333; color: white; cursor: pointer; transition: 0.2s; }
-  .main-plus { width: 56px; height: 56px; border-radius: 50%; background: var(--x-blue); color: white; border: none; font-size: 24px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+  .top-bar-info h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  .top-bar-info p { font-size: 12px; color: var(--muted); }
 
-  /* POSTS & LIKES */
-  .post { padding: 15px; border-bottom: 1px solid #333; }
-  .post-actions { display: flex; gap: 30px; margin-top: 10px; color: #71767b; }
-  .post-actions i { cursor: pointer; font-size: 14px; }
-  .post-actions .liked { color: #f91880; }
+  /* ── COVER ────────────────────────────────── */
+  .cover-wrap {
+    position: relative;
+    height: 190px;
+    overflow: hidden;
+    cursor: pointer;
+    background: linear-gradient(135deg, #0a0a1a 0%, #111130 40%, #1a0a2e 70%, #0d1a3a 100%);
+    transition: background 0.4s ease;
+  }
 
-  /* MODAL */
-  .modal { position: fixed; top: 0; width: 100%; height: 100%; display: none; background: rgba(36, 45, 52, 0.5); z-index: 1000; justify-content: center; align-items: center; }
-  .modal-content { background: #000; padding: 25px; border-radius: 16px; width: 90%; max-width: 400px; border: 1px solid #333; }
-  input { width: 95%; padding: 12px; margin-bottom: 15px; background: #000; border: 1px solid #333; color: white; border-radius: 4px; }
+  .cover-wrap::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 70% 40%, rgba(157,78,221,0.25) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 20% 80%, rgba(29,155,240,0.2) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .cover-img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: none;
+    transition: filter 0.3s ease;
+    z-index: 2;
+    position: relative;
+  }
+  .cover-img.loaded { display: block; }
+
+  .cover-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 3;
+  }
+  .cover-wrap:hover .cover-overlay {
+    background: rgba(0,0,0,0.45);
+    opacity: 1;
+  }
+  .cover-overlay span {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    background: rgba(0,0,0,0.6);
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.25);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* ── PROFILE SECTION ──────────────────────── */
+  .profile-section {
+    padding: 0 16px 16px;
+    position: relative;
+  }
+
+  .profile-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 12px;
+  }
+
+  .avatar-wrap {
+    position: relative;
+    margin-top: -38px;
+    cursor: pointer;
+    z-index: 10;
+  }
+
+  .avatar {
+    width: 76px; height: 76px;
+    border-radius: 50%;
+    border: 3px solid var(--bg);
+    object-fit: cover;
+    display: block;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    transition: filter 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  }
+  .avatar-wrap:hover .avatar { filter: brightness(0.85); transform: scale(1.03); }
+
+  .avatar-badge {
+    position: absolute;
+    bottom: 2px; right: 2px;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--accent-2);
+    border: 2px solid var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px;
+    box-shadow: 0 2px 6px rgba(157,78,221,0.4);
+  }
+
+  .avatar-placeholder {
+    width: 76px; height: 76px;
+    border-radius: 50%;
+    border: 3px solid var(--bg);
+    background: linear-gradient(135deg, #1a1a2e 0%, #2d1b69 100%);
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.3);
+    font-size: 28px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  }
+
+  .action-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding-top: 6px;
+  }
+
+  .icon-btn {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+    transition: all 0.2s ease;
+  }
+  .icon-btn:hover { background: rgba(255,255,255,0.05); border-color: #555; transform: scale(1.05); }
+
+  .btn-subscribe {
+    background: linear-gradient(135deg, var(--accent-2), #7b2ff7);
+    border: none;
+    color: white;
+    padding: 7px 18px;
+    border-radius: 20px;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 15px rgba(157,78,221,0.3);
+  }
+  .btn-subscribe:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-subscribe:active { transform: translateY(0); }
+  .btn-subscribe.subscribed {
+    background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+    color: #fff;
+    box-shadow: none;
+  }
+
+  /* ── USER INFO ────────────────────────────── */
+  .user-info { margin-top: 4px; }
+
+  .name-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .display-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: white;
+    line-height: 1.2;
+  }
+
+  .verified-icon {
+    color: var(--accent);
+    font-size: 17px;
+  }
+
+  .handle { color: var(--muted); font-size: 14px; margin-top: 2px; }
+
+  .bio {
+    margin-top: 10px;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--text);
+  }
+
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .meta-row span { display: flex; align-items: center; gap: 5px; }
+  .meta-row a { color: var(--accent); text-decoration: none; }
+  .meta-row a:hover { text-decoration: underline; }
+
+  .stats-row {
+    display: flex;
+    gap: 20px;
+    margin-top: 14px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+  .stats-row .stat b {
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+  }
+  .stats-row .stat span { color: var(--muted); }
+  .stats-row .stat { cursor: pointer; transition: opacity 0.2s; }
+  .stats-row .stat:hover { opacity: 0.7; }
+
+  /* ── TABS ─────────────────────────────────── */
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+
+  .tab-btn {
+    flex: 1;
+    min-width: fit-content;
+    padding: 14px 16px;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s ease;
+    white-space: nowrap;
+  }
+  .tab-btn::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 50%; right: 50%;
+    height: 3px;
+    background: var(--accent);
+    border-radius: 3px 3px 0 0;
+    transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1), right 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .tab-btn.active { color: white; font-weight: 600; }
+  .tab-btn.active::after { left: 20%; right: 20%; }
+
+  /* ── POSTS ────────────────────────────────── */
+  .post-feed { animation: feedIn 0.3s ease; }
+
+  @keyframes feedIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .post {
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 12px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    animation: postIn 0.3s ease both;
+  }
+  .post:hover { background: rgba(255,255,255,0.02); }
+
+  @keyframes postIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .post-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #1a1a2e, #2d1b69);
+    border: 1px solid var(--border);
+  }
+
+  .post-body { flex: 1; min-width: 0; }
+
+  .post-header {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+  }
+  .post-name {
+    font-weight: 700;
+    font-size: 15px;
+    color: white;
+  }
+  .post-handle { color: var(--muted); font-size: 14px; }
+  .post-dot { color: var(--muted); }
+  .post-time { color: var(--muted); font-size: 14px; }
+
+  .post-text {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text);
+    word-break: break-word;
+  }
+  .post-text .mention { color: var(--accent); cursor: pointer; }
+  .post-text .mention:hover { text-decoration: underline; }
+
+  .post-media {
+    margin-top: 12px;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .post-media img {
+    width: 100%;
+    display: block;
+    max-height: 320px;
+    object-fit: cover;
+  }
+
+  /* ── POST ACTIONS ─────────────────────────── */
+  .post-actions {
+    display: flex;
+    gap: 0;
+    margin-top: 12px;
+    justify-content: space-between;
+    max-width: 350px;
+  }
+
+  .action-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--muted);
+    font-size: 13px;
+    cursor: pointer;
+    padding: 5px 8px;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+
+  .action-item i { font-size: 16px; transition: transform 0.2s ease; }
+
+  .action-item:hover.comment  { color: var(--accent); background: rgba(29,155,240,0.08); }
+  .action-item:hover.repost   { color: var(--repost);  background: rgba(0,186,124,0.08); }
+  .action-item:hover.like     { color: var(--like);    background: rgba(249,24,128,0.08); }
+  .action-item:hover.share    { color: var(--accent);  background: rgba(29,155,240,0.08); }
+
+  .action-item.liked { color: var(--like); }
+  .action-item.liked i { transform: scale(1.15); }
+  .action-item.reposted { color: var(--repost); }
+
+  /* ── MEDIA GRID ───────────────────────────── */
+  .media-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    animation: feedIn 0.3s ease;
+  }
+  .media-cell {
+    aspect-ratio: 1;
+    background: var(--surface-2);
+    border-radius: 2px;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+  }
+  .media-cell::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(157,78,221,0.15), rgba(29,155,240,0.15));
+    z-index: 1;
+  }
+  .media-cell img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    z-index: 2;
+    position: relative;
+  }
+  .media-cell i {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 22px;
+    color: rgba(255,255,255,0.15);
+    z-index: 3;
+  }
+
+  /* ── EMPTY STATE ──────────────────────────── */
+  .empty-state {
+    padding: 60px 20px;
+    text-align: center;
+    animation: feedIn 0.3s ease;
+  }
+  .empty-state i { font-size: 40px; color: var(--muted); margin-bottom: 16px; display: block; }
+  .empty-state h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+  .empty-state p { color: var(--muted); font-size: 15px; }
+
+  /* ── FLOATING COMPOSE ─────────────────────── */
+  .fab-wrap {
+    position: fixed;
+    bottom: 28px; right: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    z-index: 100;
+  }
+
+  .fab-options {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(10px);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .fab-options.open {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateY(0);
+  }
+
+  .fab-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .fab-option label {
+    background: rgba(13,13,13,0.95);
+    border: 1px solid var(--border);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  .fab-small {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: white;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+  }
+  .fab-small:hover { background: #1a1a1a; transform: scale(1.08); }
+
+  .fab-main {
+    width: 54px; height: 54px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 20px rgba(29,155,240,0.4);
+    transition: all 0.25s ease;
+  }
+  .fab-main:hover { background: #1a8cd8; }
+  .fab-main.open { transform: rotate(45deg); }
+
+  /* ── MODALS ───────────────────────────────── */
+  .modal-bg {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 20px;
+    animation: fadeIn 0.2s ease;
+  }
+  .modal-bg.open { display: flex; }
+
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .modal-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    width: 100%;
+    max-width: 420px;
+    animation: modalIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.92) translateY(20px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .modal-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+  }
+  .modal-close {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    transition: background 0.2s ease;
+  }
+  .modal-close:hover { background: rgba(255,255,255,0.07); }
+
+  .modal-body { padding: 20px; }
+
+  .field-group { margin-bottom: 16px; }
+  .field-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 6px;
+  }
+  .field-group input,
+  .field-group textarea {
+    width: 100%;
+    padding: 11px 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s ease;
+    resize: none;
+  }
+  .field-group input:focus,
+  .field-group textarea:focus { border-color: var(--accent); }
+
+  .btn-save {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    background: white;
+    color: black;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 4px;
+  }
+  .btn-save:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  /* ── TOAST ────────────────────────────────── */
+  .toast {
+    position: fixed;
+    bottom: 100px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--text);
+    color: var(--bg);
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    z-index: 500;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ── HIDDEN ───────────────────────────────── */
+  .hidden { display: none !important; }
 </style>
 </head>
 <body>
 
-<div class="cover" id="cover" onclick="triggerUpload('cover')"></div>
-
-<div class="profile">
-  <div class="avatar-container">
-    <img id="avatar" class="avatar" onclick="triggerUpload('avatar')">
+<!-- TOP BAR -->
+<div class="top-bar">
+  <button class="back-btn" onclick="showToast('Back to home (demo)')"><i class="fa-solid fa-arrow-left"></i></button>
+  <div class="top-bar-info">
+    <h1 id="barName">User</h1>
+    <p id="barPostCount">0 posts</p>
   </div>
-  
-  <div class="top-row">
-    <button class="btn-icon"><i class="fa fa-bell"></i></button>
-    <button class="btn-icon" onclick="openEdit()"><i class="fa fa-user-edit"></i></button>
-    <button class="btn-sub">Subscribe</button>
-  </div>
+</div>
 
-  <div class="user-info">
-    <h2 id="dispName">User <i class="fa-solid fa-circle-check verified"></i></h2>
-    <p id="dispHandle">@user</p>
-    <div style="margin-top:8px">
-      <span id="dispCompany" style="color:#71767b; font-size:14px; margin-right:10px"></span>
-      <a id="dispLink" class="company-link" href="#"></a>
+<!-- COVER -->
+<div class="cover-wrap" id="coverWrap" onclick="triggerUpload('cover')" title="Change cover photo">
+  <img id="coverImg" class="cover-img" alt="Cover">
+  <div class="cover-overlay"><span><i class="fa-solid fa-camera"></i>Change Cover</span></div>
+</div>
+
+<!-- PROFILE SECTION -->
+<div class="profile-section">
+  <div class="profile-top-row">
+    <div class="avatar-wrap" onclick="triggerUpload('avatar')" title="Change profile photo">
+      <div id="avatarPlaceholder" class="avatar-placeholder"><i class="fa-solid fa-user"></i></div>
+      <img id="avatarImg" class="avatar hidden" alt="Avatar">
+      <div class="avatar-badge"><i class="fa-solid fa-star" style="font-size:8px"></i></div>
+    </div>
+    <div class="action-row">
+      <button class="icon-btn" title="Notifications" onclick="showToast('🔔 Notifications enabled')"><i class="fa-regular fa-bell"></i></button>
+      <button class="icon-btn" title="More options" onclick="showToast('⋯ More options opened')"><i class="fa-solid fa-ellipsis"></i></button>
+      <button class="icon-btn" title="Edit profile" onclick="openModal('editModal')"><i class="fa-solid fa-pen"></i></button>
+      <button class="btn-subscribe" id="subscribeBtn" onclick="toggleSubscribe(this)">Subscribe</button>
     </div>
   </div>
 
-  <div class="stats">
-    <span><b id="subCount">237M</b> Subscribers</span>
-    <span><b id="followingCount">1,308</b> Subscriptions</span>
+  <div class="user-info">
+    <div class="name-row">
+      <span class="display-name" id="dispName">User</span>
+      <i class="fa-solid fa-circle-check verified-icon"></i>
+    </div>
+    <p class="handle" id="dispHandle">@user</p>
+    <p class="bio" id="dispBio" style="display:none"></p>
+    <div class="meta-row" id="metaRow">
+      <span id="metaCompany" style="display:none"><i class="fa-solid fa-briefcase"></i> <span id="companyText"></span></span>
+      <span id="metaLink" style="display:none"><i class="fa-solid fa-link"></i> <a id="linkEl" href="#" target="_blank"></a></span>
+      <span><i class="fa-regular fa-calendar"></i> Joined April 2026</span>
+    </div>
+    <div class="stats-row">
+      <div class="stat" onclick="showToast('📊 237M Subscribers')">
+        <b id="subCount">237M</b> <span>Subscribers</span>
+      </div>
+      <div class="stat" onclick="showToast('📊 1,308 Subscriptions')">
+        <b id="subgCount">1,308</b> <span>Subscriptions</span>
+      </div>
+    </div>
   </div>
 </div>
 
-<div id="content"></div>
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab-btn active" data-tab="posts" onclick="switchTab(this)">Posts</button>
+  <button class="tab-btn" data-tab="replies" onclick="switchTab(this)">Replies</button>
+  <button class="tab-btn" data-tab="media" onclick="switchTab(this)">Media</button>
+  <button class="tab-btn" data-tab="likes" onclick="switchTab(this)">Likes</button>
+</div>
 
-<!-- PLUS BUTTON -->
-<div class="plus-container">
-  <div class="plus-options" id="plusOptions">
-    <button class="opt-btn"><i class="fa fa-pen"></i></button>
-    <button class="opt-btn"><i class="fa fa-image"></i></button>
-    <button class="opt-btn"><i class="fa fa-chart-bar"></i></button>
+<!-- FEED -->
+<div id="feedArea"></div>
+
+<!-- FAB -->
+<div class="fab-wrap">
+  <div class="fab-options" id="fabOptions">
+    <div class="fab-option">
+      <label>Poll</label>
+      <button class="fab-small" onclick="showToast('📊 Poll creator opened')"><i class="fa-solid fa-chart-bar"></i></button>
+    </div>
+    <div class="fab-option">
+      <label>Photo</label>
+      <button class="fab-small" onclick="triggerUpload('post')"><i class="fa-solid fa-image"></i></button>
+    </div>
+    <div class="fab-option">
+      <label>Post</label>
+      <button class="fab-small" onclick="openModal('composeModal')"><i class="fa-solid fa-pen-nib"></i></button>
+    </div>
   </div>
-  <button class="main-plus" onclick="togglePlus()"><i class="fa fa-plus"></i></button>
+  <button class="fab-main" id="fabMain" onclick="toggleFab()"><i class="fa-solid fa-plus"></i></button>
 </div>
 
 <!-- EDIT MODAL -->
-<div id="editModal" class="modal">
-  <div class="modal-content">
-    <h3>Edit Profile</h3>
-    <input id="editName" placeholder="Name">
-    <input id="editCompany" placeholder="Company (Optional)">
-    <input id="editLink" placeholder="Website Link">
-    <button class="btn-sub" style="width:100%" onclick="saveProfile()">Save Changes</button>
+<div id="editModal" class="modal-bg" onclick="backdropClose(event, 'editModal')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <span class="modal-title">Edit Profile</span>
+      <button class="modal-close" onclick="closeModal('editModal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="field-group">
+        <label>Display Name</label>
+        <input id="editName" placeholder="Your name" oninput="updatePreview()">
+      </div>
+      <div class="field-group">
+        <label>Handle</label>
+        <input id="editHandle" placeholder="@username" oninput="updatePreview()">
+      </div>
+      <div class="field-group">
+        <label>Bio</label>
+        <textarea id="editBio" placeholder="Tell the world about yourself…" rows="3"></textarea>
+      </div>
+      <div class="field-group">
+        <label>Company</label>
+        <input id="editCompany" placeholder="Where do you work?">
+      </div>
+      <div class="field-group">
+        <label>Website</label>
+        <input id="editLink" placeholder="https://yoursite.com">
+      </div>
+      <button class="btn-save" onclick="saveProfile()">Save Changes</button>
+    </div>
   </div>
 </div>
 
-<input type="file" id="fileInput" style="display:none" onchange="handleFile(this)">
+<!-- COMPOSE MODAL -->
+<div id="composeModal" class="modal-bg" onclick="backdropClose(event, 'composeModal')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <span class="modal-title">New Post</span>
+      <button class="modal-close" onclick="closeModal('composeModal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="field-group">
+        <textarea id="postInput" placeholder="What's happening?" rows="5"
+          oninput="document.getElementById('charCount').textContent = 280 - this.value.length"></textarea>
+        <p style="text-align:right; font-size:12px; color:var(--muted); margin-top:4px"><span id="charCount">280</span> left</p>
+      </div>
+      <button class="btn-save" onclick="submitPost()" style="background:var(--accent)">Post</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast"></div>
+
+<!-- Hidden file input -->
+<input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleFile(this)">
 
 <script>
+  // ── STATE ──────────────────────────────────────────────
   let activeTarget = '';
+  let fabOpen = false;
+  let subscribed = false;
+  let activeTab = 'posts';
 
+  const state = {
+    name: 'User',
+    handle: '@user',
+    bio: '',
+    company: '',
+    link: '',
+    avatarSrc: '',
+  };
+
+  // Extended posts with optional media support
+  let posts = [
+    {
+      id: 1,
+      text: 'My idea of a good time is building things with amazing engineers. The future is collaborative. 🚀',
+      time: '2h', likes: 43700, reposts: 3700, comments: 4300,
+      liked: false, reposted: false,
+      tab: 'posts',
+      media: null
+    },
+    {
+      id: 2,
+      text: 'If you\'re not shipping, you\'re not learning. Every day without a deploy is a day wasted.',
+      time: '8h', likes: 18200, reposts: 2100, comments: 940,
+      liked: false, reposted: false,
+      tab: 'posts',
+      media: null
+    },
+    {
+      id: 3,
+      text: 'Just spent 4 hours debugging. Turns out I was missing a semicolon. We don\'t talk about this.',
+      time: '1d', likes: 92100, reposts: 14300, comments: 5800,
+      liked: false, reposted: false,
+      tab: 'posts',
+      media: null
+    },
+    {
+      id: 4,
+      text: 'Replying to @elonmusk — Fully agree on this. The velocity of innovation depends on the quality of feedback loops.',
+      time: '3h', likes: 5200, reposts: 420, comments: 310,
+      liked: false, reposted: false,
+      tab: 'replies',
+      media: null
+    },
+    {
+      id: 5,
+      text: '❤️ Loved this take on distributed systems.',
+      time: '5h', likes: 12100, reposts: 1100, comments: 580,
+      liked: true, reposted: false,
+      tab: 'likes',
+      media: null
+    },
+  ];
+
+  // ── FORMAT NUMBERS ────────────────────────────────────
+  function fmt(n) {
+    if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace('.0','') + 'M';
+    if (n >= 1_000) return (n / 1_000).toFixed(1).replace('.0','') + 'K';
+    return n;
+  }
+
+  // ── RENDER FEED ──────────────────────────────────────
+  function renderFeed(tab) {
+    const area = document.getElementById('feedArea');
+
+    if (tab === 'media') {
+      // For demo, keep beautiful placeholder grid (real media posts would appear here in a full app)
+      area.innerHTML = `<div class="media-grid">
+        ${Array(9).fill(0).map(() => `
+          <div class="media-cell" onclick="showToast('📸 Media viewer opened')">
+            <i class="fa-solid fa-image"></i>
+          </div>`).join('')}
+      </div>`;
+      return;
+    }
+
+    const filtered = posts.filter(p => p.tab === tab);
+
+    if (!filtered.length) {
+      const msgs = {
+        replies: { icon: 'fa-solid fa-reply', title: 'No replies yet', sub: 'Replies will show up here.' },
+        likes:   { icon: 'fa-solid fa-heart',  title: 'No likes yet',  sub: 'Posts you like will appear here.' },
+        posts:   { icon: 'fa-solid fa-pen',    title: 'Nothing posted yet', sub: 'When you post, it\'ll show here.' },
+      };
+      const m = msgs[tab] || msgs.posts;
+      area.innerHTML = `<div class="empty-state">
+        <i class="${m.icon}"></i>
+        <h3>${m.title}</h3>
+        <p>${m.sub}</p>
+      </div>`;
+      return;
+    }
+
+    area.innerHTML = `<div class="post-feed">${filtered.map((p, i) => postHTML(p, i)).join('')}</div>`;
+    // Always update post count in top bar
+    document.getElementById('barPostCount').textContent = `${posts.filter(x => x.tab === 'posts').length} posts`;
+  }
+
+  function postHTML(p, delay) {
+    const avatarEl = state.avatarSrc
+      ? `<img src="${state.avatarSrc}" class="post-avatar" alt="Avatar">`
+      : `<div class="post-avatar" style="display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.2)"><i class="fa-solid fa-user"></i></div>`;
+
+    const text = p.text.replace(/@\w+/g, m => `<span class="mention">${m}</span>`);
+
+    const mediaHTML = p.media 
+      ? `<div class="post-media"><img src="${p.media}" alt="Post media"></div>` 
+      : '';
+
+    return `
+    <div class="post" style="animation-delay:${delay * 0.06}s" onclick="showToast('Open post')">
+      ${avatarEl}
+      <div class="post-body">
+        <div class="post-header">
+          <span class="post-name">${state.name}</span>
+          <i class="fa-solid fa-circle-check" style="color:var(--accent);font-size:13px"></i>
+          <span class="post-handle">${state.handle}</span>
+          <span class="post-dot">·</span>
+          <span class="post-time">${p.time}</span>
+        </div>
+        <p class="post-text">${text}</p>
+        ${mediaHTML}
+        <div class="post-actions" onclick="event.stopPropagation()">
+          <span class="action-item comment" onclick="showToast('Reply')">
+            <i class="fa-regular fa-comment"></i> ${fmt(p.comments)}
+          </span>
+          <span class="action-item repost \( {p.reposted ? 'reposted' : ''}" onclick="toggleRepost( \){p.id}, this)">
+            <i class="fa-solid fa-retweet"></i> <span class="rc">${fmt(p.reposts)}</span>
+          </span>
+          <span class="action-item like \( {p.liked ? 'liked' : ''}" onclick="toggleLike( \){p.id}, this)">
+            <i class="fa-\( {p.liked ? 'solid' : 'regular'} fa-heart"></i> <span class="lc"> \){fmt(p.likes)}</span>
+          </span>
+          <span class="action-item share" onclick="showToast('✅ Link copied!')">
+            <i class="fa-solid fa-arrow-up-from-bracket"></i>
+          </span>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // ── LIKE / REPOST ────────────────────────────────────
+  function toggleLike(id, el) {
+    const p = posts.find(x => x.id === id);
+    if (!p) return;
+    p.liked = !p.liked;
+    p.likes += p.liked ? 1 : -1;
+    el.classList.toggle('liked', p.liked);
+    el.querySelector('i').className = `fa-${p.liked ? 'solid' : 'regular'} fa-heart`;
+    el.querySelector('.lc').textContent = fmt(p.likes);
+  }
+
+  function toggleRepost(id, el) {
+    const p = posts.find(x => x.id === id);
+    if (!p) return;
+    p.reposted = !p.reposted;
+    p.reposts += p.reposted ? 1 : -1;
+    el.classList.toggle('reposted', p.reposted);
+    el.querySelector('.rc').textContent = fmt(p.reposts);
+    showToast(p.reposted ? '✅ Reposted' : '↩️ Undo repost');
+  }
+
+  // ── TABS ──────────────────────────────────────────────
+  function switchTab(btn) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeTab = btn.dataset.tab;
+    renderFeed(activeTab);
+  }
+
+  // ── FAB ───────────────────────────────────────────────
+  function toggleFab() {
+    fabOpen = !fabOpen;
+    document.getElementById('fabOptions').classList.toggle('open', fabOpen);
+    document.getElementById('fabMain').classList.toggle('open', fabOpen);
+  }
+
+  // ── SUBSCRIBE ─────────────────────────────────────────
+  function toggleSubscribe(btn) {
+    subscribed = !subscribed;
+    btn.textContent = subscribed ? 'Subscribed ✓' : 'Subscribe';
+    btn.classList.toggle('subscribed', subscribed);
+    showToast(subscribed ? '✅ Subscribed!' : '❌ Unsubscribed');
+  }
+
+  // ── PROFILE EDITING ───────────────────────────────────
+  function updatePreview() {
+    const n = document.getElementById('editName').value.trim() || 'User';
+    document.getElementById('dispName').textContent = n;
+    document.getElementById('barName').textContent = n;
+    state.name = n;
+
+    const h = document.getElementById('editHandle').value.trim();
+    if (h) {
+      const handle = h.startsWith('@') ? h : '@' + h;
+      document.getElementById('dispHandle').textContent = handle;
+      state.handle = handle;
+    }
+  }
+
+  function saveProfile() {
+    updatePreview();
+
+    const bio = document.getElementById('editBio').value.trim();
+    const company = document.getElementById('editCompany').value.trim();
+    const link = document.getElementById('editLink').value.trim();
+
+    const bioEl = document.getElementById('dispBio');
+    bioEl.textContent = bio;
+    bioEl.style.display = bio ? 'block' : 'none';
+    state.bio = bio;
+
+    const metaRow = document.getElementById('metaRow');
+    const companyEl = document.getElementById('metaCompany');
+    const linkEl2 = document.getElementById('metaLink');
+    const linkA = document.getElementById('linkEl');
+
+    document.getElementById('companyText').textContent = company;
+    companyEl.style.display = company ? 'flex' : 'none';
+
+    if (link) {
+      linkA.textContent = link.replace(/^https?:\/\//, '');
+      linkA.href = link.startsWith('http') ? link : 'https://' + link;
+      linkEl2.style.display = 'flex';
+    } else {
+      linkEl2.style.display = 'none';
+    }
+
+    metaRow.style.display = 'flex';
+    state.company = company;
+    state.link = link;
+
+    closeModal('editModal');
+    renderFeed(activeTab);
+    showToast('✅ Profile updated!');
+  }
+
+  // ── COMPOSE POST ─────────────────────────────────────
+  function submitPost() {
+    const txt = document.getElementById('postInput').value.trim();
+    if (!txt) { showToast('✍️ Write something first!'); return; }
+    if (txt.length > 280) { showToast('⚠️ Too long (max 280 chars)'); return; }
+    posts.unshift({
+      id: Date.now(),
+      text: txt,
+      time: 'just now',
+      likes: 0, reposts: 0, comments: 0,
+      liked: false, reposted: false,
+      tab: 'posts',
+      media: null
+    });
+    document.getElementById('postInput').value = '';
+    document.getElementById('charCount').textContent = '280';
+    closeModal('composeModal');
+    // Switch to posts tab
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('[data-tab="posts"]').classList.add('active');
+    activeTab = 'posts';
+    renderFeed('posts');
+    showToast('✅ Posted!');
+  }
+
+  // ── MEDIA UPLOAD (PERFECTED) ─────────────────────────────
   function triggerUpload(target) {
     activeTarget = target;
     document.getElementById('fileInput').click();
   }
 
   function handleFile(input) {
-    if (input.files && input.files[0]) {
-      const reader = new FileReader();
-      reader.onload = e => {
-        if(activeTarget === 'avatar') document.getElementById('avatar').src = e.target.result;
-        if(activeTarget === 'cover') document.getElementById('cover').style.backgroundImage = `url(${e.target.result})`;
-      };
-      reader.readAsDataURL(input.files[0]);
+    if (!input.files || !input.files[0]) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const dataUrl = e.target.result;
+
+      if (activeTarget === 'avatar') {
+        state.avatarSrc = dataUrl;
+        document.getElementById('avatarPlaceholder').style.display = 'none';
+        const img = document.getElementById('avatarImg');
+        img.src = dataUrl;
+        img.classList.remove('hidden');
+        renderFeed(activeTab);
+        showToast('✅ Avatar updated');
+      }
+
+      if (activeTarget === 'cover') {
+        const img = document.getElementById('coverImg');
+        img.src = dataUrl;
+        img.classList.add('loaded');
+        document.getElementById('coverWrap').style.background = 'none';
+        showToast('✅ Cover updated');
+      }
+
+      // PERFECTED: Photo upload now creates a real post with media
+      if (activeTarget === 'post') {
+        posts.unshift({
+          id: Date.now(),
+          text: '📸 Just shared this moment',
+          time: 'just now',
+          likes: 124,
+          reposts: 18,
+          comments: 9,
+          liked: false,
+          reposted: false,
+          tab: 'posts',
+          media: dataUrl
+        });
+        // Auto-switch to Posts tab and render
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        const postsTab = document.querySelector('[data-tab="posts"]');
+        if (postsTab) postsTab.classList.add('active');
+        activeTab = 'posts';
+        renderFeed('posts');
+        showToast('✅ Photo posted to your feed!');
+      }
+    };
+    reader.readAsDataURL(input.files[0]);
+    input.value = ''; // reset input
+  }
+
+  // ── MODAL HELPERS ─────────────────────────────────────
+  function openModal(id) {
+    if (id === 'editModal') {
+      document.getElementById('editName').value = state.name !== 'User' ? state.name : '';
+      document.getElementById('editHandle').value = state.handle !== '@user' ? state.handle.replace('@','') : '';
+      document.getElementById('editBio').value = state.bio;
+      document.getElementById('editCompany').value = state.company;
+      document.getElementById('editLink').value = state.link;
     }
+    document.getElementById(id).classList.add('open');
+    if (fabOpen) toggleFab();
+  }
+  function closeModal(id) { 
+    document.getElementById(id).classList.remove('open'); 
+  }
+  function backdropClose(e, id) { 
+    if (e.target === e.currentTarget) closeModal(id); 
   }
 
-  function togglePlus() {
-    const opts = document.getElementById('plusOptions');
-    opts.style.display = opts.style.display === 'flex' ? 'none' : 'flex';
+  // ── TOAST ─────────────────────────────────────────────
+  let toastTimer;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
   }
 
-  function openEdit() { document.getElementById('editModal').style.display = 'flex'; }
-
-  function saveProfile() {
-    document.getElementById('dispName').innerHTML = document.getElementById('editName').value + ' <i class="fa-solid fa-circle-check verified"></i>';
-    document.getElementById('dispCompany').innerText = document.getElementById('editCompany').value;
-    const link = document.getElementById('editLink').value;
-    document.getElementById('dispLink').innerText = link;
-    document.getElementById('dispLink').href = link.startsWith('http') ? link : 'https://' + link;
-    document.getElementById('editModal').style.display = 'none';
+  // ── INIT ─────────────────────────────────────────────
+  function init() {
+    renderFeed('posts');
+    // Meta row is always visible (joined date + optional fields)
+    document.getElementById('metaRow').style.display = 'flex';
+    console.log('%c✅ NEXA Profile PRO initialized perfectly!', 'color:#1d9bf0;font-weight:700');
   }
-
-  // Initial Post with Like System
-  function renderPost() {
-    const postData = { content: "My idea of a good time is working with amazing engineers.", likes: 43700 };
-    document.getElementById('content').innerHTML = `
-      <div class="post">
-        <div style="display:flex; gap:10px">
-          <img src="${document.getElementById('avatar').src}" style="width:40px; height:40px; border-radius:50%">
-          <div>
-            <b>${document.getElementById('dispName').innerText}</b> <span style="color:#71767b">@user · 1h</span>
-            <p style="margin:5px 0">${postData.content}</p>
-            <div class="post-actions">
-              <span><i class="fa fa-comment"></i> 4.3K</span>
-              <span><i class="fa fa-retweet"></i> 3.7K</span>
-              <span onclick="toggleLike(this, ${postData.likes})"><i class="fa fa-heart"></i> <span class="l-count">43.7K</span></span>
-            </div>
-          </div>
-        </div>
-      </div>`;
-  }
-
-  function toggleLike(el, base) {
-    const icon = el.querySelector('i');
-    const count = el.querySelector('.l-count');
-    icon.classList.toggle('liked');
-    icon.classList.toggle('fa-solid');
-    count.innerText = icon.classList.contains('liked') ? "43.8K" : "43.7K";
-  }
-
-  // Init
-  document.getElementById('avatar').src = "https://imgur.com";
-  renderPost();
+  window.onload = init;
 </script>
 </body>
 </html>
